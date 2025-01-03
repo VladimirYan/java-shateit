@@ -102,9 +102,11 @@ public class ItemServiceImpl implements ItemService {
         }
     }
 
-    private void validateItemDto(ItemDto itemDto) {if (itemDto.getAvailable() == null || itemDto.getDescription() == null || itemDto.getName() == null) {
+    private void validateItemDto(ItemDto itemDto) {
+        if (itemDto.getAvailable() == null || itemDto.getDescription() == null || itemDto.getName() == null) {
         throw new EmptyFieldException("Поля в элементе ItemDto содержат null!");
-    }
+        }
+
         if (itemDto.getName().trim().isEmpty() || itemDto.getDescription().trim().isEmpty()) {
             throw new EmptyFieldException("Поля в элементе ItemDto пустые!");
         }

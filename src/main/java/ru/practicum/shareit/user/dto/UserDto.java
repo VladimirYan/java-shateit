@@ -5,12 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 
 
+
 @Builder
 @Data
 public class UserDto {
 
     private Long id;
     private String name;
-    @Email(message = "Неправильный адрес электронной почты")
+    @Email(message = "Неккоректная почта")
     private String email;
 }

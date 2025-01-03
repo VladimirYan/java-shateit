@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ErrorHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ApiError> handleEntityNotFoundException(EntityNotFoundException e) {
+    public ResponseEntity<ApiError> handleUserNotFoundException(EntityNotFoundException e) {
         ApiError apiError = new ApiError(e.getMessage(), HttpStatus.NOT_FOUND.value());
         return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
     }
@@ -27,9 +27,28 @@ public class ErrorHandler {
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(GatewayHeaderException.class)
-    public ResponseEntity<ApiError> handleGatewayHeaderException(GatewayHeaderException e) {
+    @ExceptionHandler(IncorrectDataException.class)
+    public ResponseEntity<ApiError> handleGatewayHeaderException(IncorrectDataException e) {
         ApiError apiError = new ApiError(e.getMessage(), HttpStatus.BAD_REQUEST.value());
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(UnsupportedStatusException.class)
+    public ResponseEntity<ApiError> handleUnsupportedStateException(UnsupportedStatusException e) {
+        ApiError apiError = new ApiError("Unknown state: " + e.getMessage(), HttpStatus.BAD_REQUEST.value());
+        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(BookingAccessDeniedException.class)
+    public ResponseEntity<ApiError> handleAccessDeniedException(BookingAccessDeniedException e) {
+        ApiError apiError = new ApiError(e.getMessage(), HttpStatus.FORBIDDEN.value());
+        return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiError> handleAllExceptions(Exception e) {
+        ApiError apiError = new ApiError("Internal server error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
+        return new ResponseEntity<>(apiError, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }
+

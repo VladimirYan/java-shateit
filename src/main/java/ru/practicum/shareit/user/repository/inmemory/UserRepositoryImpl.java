@@ -20,13 +20,11 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public User create(User user) {
         log.debug("Создание пользователя: {}", user);
-        user.setId(++userIdCounter);
-
         if (!uniqueEmails.add(user.getEmail())) {
-            userIdCounter--;
             throw new EmailIsAlreadyRegisteredException("Пользователь с этим email уже зарегистрирован!");
         }
 
+        user.setId(++userIdCounter);
         users.put(user.getId(), user);
         return user;
     }
@@ -51,13 +49,15 @@ public class UserRepositoryImpl implements UserRepository {
         }
 
         String newEmail = user.getEmail();
-        String existingEmail = existingUser.getEmail();
+        String oldEmail = existingUser.getEmail();
 
-        if (!newEmail.equals(existingEmail)) {
-            if (!uniqueEmails.add(newEmail)) {
+        if (!newEmail.equals(oldEmail)) {
+            if (!uniqueEmails.contains(newEmail)) {
+                uniqueEmails.remove(oldEmail);
+                uniqueEmails.add(newEmail);
+            } else {
                 throw new EmailIsAlreadyRegisteredException("Пользователь с этим email уже зарегистрирован!");
             }
-            uniqueEmails.remove(existingEmail);
         }
 
         log.debug("Обновление пользователя с ID: {}, данные: {}", user.getId(), user);

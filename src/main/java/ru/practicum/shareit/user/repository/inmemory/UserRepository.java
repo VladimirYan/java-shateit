@@ -1,4 +1,4 @@
-package ru.practicum.shareit.user.repository;
+package ru.practicum.shareit.user.repository.inmemory;
 
 import ru.practicum.shareit.user.model.User;
 

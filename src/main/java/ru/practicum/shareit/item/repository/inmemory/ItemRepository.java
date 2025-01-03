@@ -1,6 +1,6 @@
-package ru.practicum.shareit.item.repository;
+package ru.practicum.shareit.item.repository.inmemory;
 
-import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.model.item.Item;
 
 import java.util.Collection;
 

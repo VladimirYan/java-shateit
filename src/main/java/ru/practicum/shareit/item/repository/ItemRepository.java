@@ -10,14 +10,14 @@ import java.util.List;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
-    // получение списка вещей владельца
     List<Item> getItemsByOwner(User owner);
 
-    // получение списка вещей по запросу пользователя
-    @Query(" select i from Item i " +
-            "where lower(i.name) like lower(concat('%', :search, '%')) " +
-            " or lower(i.description) like lower(concat('%', :search, '%')) " +
-            " and i.available = true")
+    @Query("""
+           SELECT i FROM Item i
+           WHERE (LOWER(i.name) LIKE LOWER(CONCAT('%', :search, '%'))
+                  OR LOWER(i.description) LIKE LOWER(CONCAT('%', :search, '%')))
+             AND i.available = true
+           """)
     List<Item> getItemsBySearchQuery(@Param("search") String text);
 
     List<Item> findByNameIgnoreCaseAndAvailableTrue(String text);

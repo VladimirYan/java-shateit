@@ -19,17 +19,17 @@ public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id; // идентификатор комментария
+    private Long id;
 
-    private String text; // Текст комментария
+    private String text;
 
     @ManyToOne
     @JoinColumn(name = "item_id")
-    private Item item; // Вещь, к которой относится комментарий
+    private Item item;
 
     @ManyToOne
     @JoinColumn(name = "author_id")
-    private User author; // Автор комментария
+    private User author;
 
-    private LocalDateTime created; // Дата и время создания комментария
+    private LocalDateTime created;
 }

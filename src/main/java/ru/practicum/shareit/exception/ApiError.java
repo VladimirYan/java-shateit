@@ -1,9 +1,9 @@
 package ru.practicum.shareit.exception;
 
-public class ErrorResponse {
+public class ApiError {
     private final String error;
 
-    public ErrorResponse(String error) {
+    public ApiError(String error) {
         this.error = error;
     }
 

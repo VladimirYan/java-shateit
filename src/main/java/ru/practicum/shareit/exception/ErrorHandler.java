@@ -10,19 +10,19 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleValidationException(final ValidationException e) {
-        return new ErrorResponse(e.getMessage());
+    public ApiError handleValidationException(final ValidationException e) {
+        return new ApiError(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleUserAlreadyExistException(final UserAlreadyExistsException e) {
-        return new ErrorResponse(e.getMessage());
+    public ApiError handleUserAlreadyExistException(final UserAlreadyExistsException e) {
+        return new ApiError(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleNotFoundException(final NotFoundException e) {
-        return new ErrorResponse(e.getMessage());
+    public ApiError handleNotFoundException(final NotFoundException e) {
+        return new ApiError(e.getMessage());
     }
 }

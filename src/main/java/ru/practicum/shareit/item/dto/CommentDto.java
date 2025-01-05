@@ -12,10 +12,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Data
 public class CommentDto {
-    private Long id; // идентификатор комментария
-    private String text; // Текст комментария
+    private Long id;
+    private String text;
     private String authorName;
-    private Item item; // Вещь, к которой относится комментарий
-    private UserDto author; // Автор комментария
-    private LocalDateTime created; // Дата и время создания комментария
+    private Item item;
+    private UserDto author;
+    private LocalDateTime created;
 }

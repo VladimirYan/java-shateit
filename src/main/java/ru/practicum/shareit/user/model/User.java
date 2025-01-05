@@ -1,46 +1,26 @@
 package ru.practicum.shareit.user.model;
 
 import jakarta.persistence.*;
-import lombok.*;
-import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.item.model.item.Item;
+import jakarta.validation.constraints.Email;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-
-import java.util.List;
-import java.util.Objects;
-
-@Getter
-@Setter
-@ToString
-@Table(name = "users")
 @Entity
+@Table(name = "users")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-    private String name;
-    private String email;
+    @Column(name = "id")
+    private Long id; // уникальный идентификатор
 
-    @OneToMany(mappedBy = "owner")
-    List<Item> items;
+    private String name; // имя или логин пользователя
 
-    @OneToMany(mappedBy = "booker", cascade = CascadeType.ALL)
-    private List<Booking> bookings;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return id == user.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
+    @Email
+    private String email; // почта пользователя
 }

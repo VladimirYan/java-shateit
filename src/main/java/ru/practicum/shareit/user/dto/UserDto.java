@@ -1,16 +1,21 @@
 package ru.practicum.shareit.user.dto;
 
 import jakarta.validation.constraints.Email;
-import lombok.Builder;
-import lombok.Data;
-
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
 public class UserDto {
-
-    private Long id;
-    private String name;
-    @Email(message = "Неккоректная почта")
-    private String email;
+    private Long id; // уникальный идентификатор
+    @NotNull
+    @NotBlank
+    private String name; // имя или логин пользователя
+    @Email
+    @NotNull
+    @NotBlank
+    private String email; // почта пользователя
 }

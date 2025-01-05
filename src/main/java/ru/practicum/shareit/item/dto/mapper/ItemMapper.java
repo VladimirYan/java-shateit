@@ -1,39 +1,67 @@
 package ru.practicum.shareit.item.dto.mapper;
 
+import org.springframework.stereotype.Component;
+import ru.practicum.shareit.booking.service.BookingService;
+import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.user.dto.mapper.UserMapper;
 
-
+@Component
 public class ItemMapper {
 
-    public static ItemDto toItemDto(Item item) {
-        return ItemDto.builder()
-                .id(item.getId())
-                .name(item.getName())
-                .description(item.getDescription())
-                .request(item.getRequest())
-                .available(item.getAvailable())
-                .build();
+    private final UserService userService;
+    private final BookingService bookingService;
+    private final ItemService itemService;
+    private final UserMapper userMapper;
+
+    public ItemMapper(UserService userService,
+                      BookingService bookingService,
+                      ItemService itemService,
+                      UserMapper userMapper
+    ) {
+        this.userService = userService;
+        this.bookingService = bookingService;
+        this.itemService = itemService;
+        this.userMapper = userMapper;
     }
 
-    public static Item toItem(ItemDto itemDto) {
-        return Item.builder()
-                .id(itemDto.getId() != null ? itemDto.getId() : 0)
-                .name(itemDto.getName())
-                .description(itemDto.getDescription())
-                .available(itemDto.getAvailable())
-                .request(itemDto.getRequest())
-                .build();
+    public ItemDto toItemDto(Item item) {
+        return new ItemDto(
+                item.getId(),
+                item.getName(),
+                item.getDescription(),
+                item.getAvailable(),
+                item.getOwner() != null ? userMapper.toUserDto(item.getOwner()) : null,
+                item.getRequestId() != null ? item.getRequestId() : null,
+                null,
+                null,
+                itemService.getCommentsByItemId(item.getId())
+        );
     }
 
-    public static Item toItemUpdate(ItemDto itemDto, Item item) {
-        return Item.builder()
-                .id(itemDto.getId())
-                .name(itemDto.getName() != null ? itemDto.getName() : item.getName())
-                .description(itemDto.getDescription() != null ? itemDto.getDescription() : item.getDescription())
-                .available(itemDto.getAvailable() != null ? itemDto.getAvailable() : item.getAvailable())
-                .request(item.getRequest())
-                .owner(item.getOwner())
-                .build();
+    public Item toItem(ItemDto itemDto, Long owner) {
+        return new Item(
+                itemDto.getId(),
+                itemDto.getName(),
+                itemDto.getDescription(),
+                itemDto.getAvailable(),
+                itemDto.getOwner() != null ?  userMapper.toUser(itemDto.getOwner()) : null,
+                itemDto.getRequestId() != null ? itemDto.getRequestId() : null
+        );
+    }
+
+    public CommentDto toCommentDto(Comment comment) {
+        return new CommentDto(
+                comment.getId(),
+                comment.getText(),
+                comment.getAuthor().getName(),
+                comment.getItem(),
+                userMapper.toUserDto(comment.getAuthor()),
+                comment.getCreated());
     }
 }
+

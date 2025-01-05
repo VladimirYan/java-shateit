@@ -7,27 +7,30 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.user.model.User;
 
+import java.time.LocalDateTime;
+
 @Entity
-@Table(name = "items")
+@Table(name = "comments")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class Item {
+public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    private String name;
-
-    private String description;
-
-    private Boolean available;
+    private String text;
 
     @ManyToOne
-    @JoinColumn(name = "owner", referencedColumnName = "id")
-    private User owner;
+    @JoinColumn(name = "item_id")
+    private Item item;
 
-    private Long requestId;
+    @ManyToOne
+    @JoinColumn(name = "author_id")
+    private User author;
+
+    private LocalDateTime created;
 }
+

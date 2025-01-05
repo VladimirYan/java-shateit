@@ -1,35 +1,28 @@
 package ru.practicum.shareit.exception;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
 
 @RestControllerAdvice
 public class ErrorHandler {
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ApiError> handleEntityNotFoundException(EntityNotFoundException e) {
-        ApiError apiError = new ApiError(e.getMessage(), HttpStatus.NOT_FOUND.value());
-        return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError handleValidationException(final ValidationException e) {
+        return new ApiError(e.getMessage());
     }
 
-    @ExceptionHandler(EmailIsAlreadyRegisteredException.class)
-    public ResponseEntity<ApiError> handleEmailAlreadyExistsException(EmailIsAlreadyRegisteredException e) {
-        ApiError apiError = new ApiError(e.getMessage(), HttpStatus.CONFLICT.value());
-        return new ResponseEntity<>(apiError, HttpStatus.CONFLICT);
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ApiError handleUserAlreadyExistException(final UserAlreadyExistsException e) {
+        return new ApiError(e.getMessage());
     }
 
-    @ExceptionHandler(EmptyFieldException.class)
-    public ResponseEntity<ApiError> handleEmptyFieldException(EmptyFieldException e) {
-        ApiError apiError = new ApiError(e.getMessage(), HttpStatus.BAD_REQUEST.value());
-        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(GatewayHeaderException.class)
-    public ResponseEntity<ApiError> handleGatewayHeaderException(GatewayHeaderException e) {
-        ApiError apiError = new ApiError(e.getMessage(), HttpStatus.BAD_REQUEST.value());
-        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ApiError handleNotFoundException(final NotFoundException e) {
+        return new ApiError(e.getMessage());
     }
 }

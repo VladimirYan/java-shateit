@@ -1,23 +1,23 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.item.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.booking.Booking;
-import ru.practicum.shareit.booking.BookingService;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
-import ru.practicum.shareit.item.dao.CommentRepository;
-import ru.practicum.shareit.item.dao.ItemRepository;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.mapper.ItemMapper;
+import ru.practicum.shareit.item.dto.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.UserService;
-import ru.practicum.shareit.user.dao.UserRepository;
-import ru.practicum.shareit.user.mapper.UserMapper;
+import ru.practicum.shareit.item.repository.CommentRepository;
+import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.user.repository.UserRepository;
+import ru.practicum.shareit.user.dto.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;

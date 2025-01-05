@@ -1,13 +1,14 @@
-package ru.practicum.shareit.booking;
+package ru.practicum.shareit.booking.controller;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingInputDto;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.user.dao.UserRepository;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
 

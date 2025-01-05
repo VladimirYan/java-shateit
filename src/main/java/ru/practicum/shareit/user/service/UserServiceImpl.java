@@ -2,19 +2,19 @@ package ru.practicum.shareit.user.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.EmptyFieldException;
 import ru.practicum.shareit.exception.EntityNotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.repository.UserRepository;
+import ru.practicum.shareit.user.repository.inmemory.UserRepository;
+
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.practicum.shareit.user.dto.mapper.UserMapper.*;
 
-@Service
 @Slf4j
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -23,24 +23,30 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto create(UserDto userDto) {
-        validateUserDto(userDto);
-        log.debug(CREATE_USER_LOG, userDto);
-        User user = UserMapper.toUser(userDto);
+        if (userDto.getEmail() == null) {
+            throw new EmptyFieldException("Электронная почта отсутствует");
+        }
+        log.debug("Создание пользователя: {}", userDto);
+
+        User user = toUser(userDto);
         User createdUser = userRepository.create(user);
-        return UserMapper.toUserDto(createdUser);
+
+        return toUserDto(createdUser);
     }
 
     @Override
     public UserDto getById(long id) {
-        validateId(id);
-        log.debug(GET_USER_BY_ID_LOG, id);
+        validateUserExists(id);
+        log.debug("Получение пользователя по ID: {}", id);
+
         User user = userRepository.getById(id);
-        return UserMapper.toUserDto(user);
+        return toUserDto(user);
     }
 
     @Override
     public Collection<UserDto> getAll() {
-        log.debug(GET_ALL_USERS_LOG);
+        log.debug("Получение всех пользователей");
+
         return userRepository.getAll().stream()
                 .map(UserMapper::toUserDto)
                 .collect(Collectors.toList());
@@ -48,38 +54,28 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto update(UserDto userDto) {
-        validateId(userDto.getId());
-        log.debug(UPDATE_USER_LOG, userDto);
+        validateUserExists(userDto.getId());
+        log.debug("Обновление пользователя: {}", userDto);
+
         User existingUser = userRepository.getById(userDto.getId());
-        User updatedUser = userRepository.update(UserMapper.toUserUpdate(userDto, existingUser));
-        return UserMapper.toUserDto(updatedUser);
+        User updatedUser = toUserUpdate(userDto, existingUser);
+        User savedUser = userRepository.update(updatedUser);
+
+        return toUserDto(savedUser);
     }
 
     @Override
     public void delete(long id) {
-        validateId(id);
-        log.debug(DELETE_USER_LOG, id);
+        validateUserExists(id);
+        log.debug("Удаление пользователя по ID: {}", id);
+
         userRepository.delete(id);
     }
 
-    private void validateId(long id) {
+    private void validateUserExists(long id) {
         if (userRepository.getById(id) == null) {
-            log.warn("Пользователь с ID {} не найден", id);
-            throw new EntityNotFoundException(String.format("Пользователь с ID %d не найден", id));
+            throw new EntityNotFoundException("Пользователь с ID " + id + " не найден");
         }
     }
-
-    private void validateUserDto(UserDto userDto) {
-        if (userDto.getEmail() == null || userDto.getEmail().trim().isEmpty()) {
-            log.warn("Попытка создать пользователя с пустым Email");
-            throw new EmptyFieldException(EMPTY_EMAIL_ERROR);
-        }
-    }
-
-    private static final String CREATE_USER_LOG = "Создание пользователя: {}";
-    private static final String EMPTY_EMAIL_ERROR = "Поле Email пустое";
-    private static final String GET_USER_BY_ID_LOG = "Получение пользователя по ID: {}";
-    private static final String GET_ALL_USERS_LOG = "Получение всех пользователей";
-    private static final String UPDATE_USER_LOG = "Обновление пользователя: {}";
-    private static final String DELETE_USER_LOG = "Удаление пользователя по ID: {}";
 }
+

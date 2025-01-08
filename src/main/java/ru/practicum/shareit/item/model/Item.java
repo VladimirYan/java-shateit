@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import ru.practicum.shareit.user.model.User;
 
 @Entity
@@ -25,6 +26,7 @@ public class Item {
 
     private Boolean available;
 
+    @Lazy
     @ManyToOne
     @JoinColumn(name = "owner", referencedColumnName = "id")
     private User owner;

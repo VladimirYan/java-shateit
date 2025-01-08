@@ -1,16 +1,12 @@
 services:
   db:
-    image: postgres:16.6
-    ports:
-      - "6432:5432"
-    volumes:
-      - ./volumes/postgres:/var/lib/postgresql/data/
+    image: postgres:alpine3.21
+    container_name: postgres_share
     environment:
-      - POSTGRES_DB=shareit
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=12345
-    healthcheck:
-      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
-      timeout: 5s
-      interval: 5s
-      retries: 10
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: user
+      POSTGRES_DB: shareit
+    ports:
+      - "5433:5432"
+    volumes:
+      - 'C:\Docker image:/var/lib/postgresql/data'

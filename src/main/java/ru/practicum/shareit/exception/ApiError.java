@@ -1,21 +1,14 @@
 package ru.practicum.shareit.exception;
 
-import lombok.Data;
-
-@Data
 public class ApiError {
+    private final String error;
 
-    private String message;
-    private int status;
-    private long timestamp;
-
-    public ApiError() {
-        this.timestamp = System.currentTimeMillis();
+    public ApiError(String error) {
+        this.error = error;
     }
 
-    public ApiError(String message, int status) {
-        this();
-        this.message = message;
-        this.status = status;
+    public String getError() {
+        return error;
     }
 }
+

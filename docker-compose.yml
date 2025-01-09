@@ -1,0 +1,12 @@
+services:
+  db:
+    image: postgres:alpine3.21
+    container_name: postgres_share
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: user
+      POSTGRES_DB: shareit
+    ports:
+      - "5433:5432"
+    volumes:
+      - 'C:\Docker image:/var/lib/postgresql/data'

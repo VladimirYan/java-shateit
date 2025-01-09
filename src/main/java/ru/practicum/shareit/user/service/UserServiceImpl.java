@@ -1,85 +1,92 @@
 package ru.practicum.shareit.user.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.EmptyFieldException;
-import ru.practicum.shareit.exception.EntityNotFoundException;
+import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.UserAlreadyExistsException;
+import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collection;
+import java.util.ArrayList;
 
 
-@Service
 @Slf4j
-@RequiredArgsConstructor
+@Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
-    @Override
-    public UserDto create(UserDto userDto) {
-        validateUserDto(userDto);
-        log.debug(CREATE_USER_LOG, userDto);
-        User user = UserMapper.toUser(userDto);
-        User createdUser = userRepository.create(user);
-        return UserMapper.toUserDto(createdUser);
+    @Autowired
+    public UserServiceImpl(UserRepository userRepository,
+                           UserMapper userMapper) {
+        this.userRepository = userRepository;
+        this.userMapper = userMapper;
     }
 
     @Override
-    public UserDto getById(long id) {
-        validateId(id);
-        log.debug(GET_USER_BY_ID_LOG, id);
-        User user = userRepository.getById(id);
-        return UserMapper.toUserDto(user);
-    }
+    public UserDto createUser(UserDto userDto) {
+        User user = userMapper.toUser(userDto);
 
-    @Override
-    public Collection<UserDto> getAll() {
-        log.debug(GET_ALL_USERS_LOG);
-        return userRepository.getAll().stream()
-                .map(UserMapper::toUserDto)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public UserDto update(UserDto userDto) {
-        validateId(userDto.getId());
-        log.debug(UPDATE_USER_LOG, userDto);
-        User existingUser = userRepository.getById(userDto.getId());
-        User updatedUser = userRepository.update(UserMapper.toUserUpdate(userDto, existingUser));
-        return UserMapper.toUserDto(updatedUser);
-    }
-
-    @Override
-    public void delete(long id) {
-        validateId(id);
-        log.debug(DELETE_USER_LOG, id);
-        userRepository.delete(id);
-    }
-
-    private void validateId(long id) {
-        if (userRepository.getById(id) == null) {
-            log.warn("Пользователь с ID {} не найден", id);
-            throw new EntityNotFoundException(String.format("Пользователь с ID %d не найден", id));
+        if (user.getEmail() == null || user.getEmail().isEmpty()) {
+            throw new ValidationException("Отсутствует email пользователя");
         }
-    }
 
-    private void validateUserDto(UserDto userDto) {
-        if (userDto.getEmail() == null || userDto.getEmail().trim().isEmpty()) {
-            log.warn("Попытка создать пользователя с пустым Email");
-            throw new EmptyFieldException(EMPTY_EMAIL_ERROR);
+        if (userRepository.findAll().stream()
+                .anyMatch(user2 -> user2.getEmail().equals(user.getEmail()))) {
+            log.error("email={} уже используется", user.getEmail());
+            throw new UserAlreadyExistsException("email=" + user.getEmail() + " уже используется");
         }
+
+        User user1 = userRepository.save(user);
+
+        return userMapper.toUserDto(user1);
     }
 
-    private static final String CREATE_USER_LOG = "Создание пользователя: {}";
-    private static final String EMPTY_EMAIL_ERROR = "Поле Email пустое";
-    private static final String GET_USER_BY_ID_LOG = "Получение пользователя по ID: {}";
-    private static final String GET_ALL_USERS_LOG = "Получение всех пользователей";
-    private static final String UPDATE_USER_LOG = "Обновление пользователя: {}";
-    private static final String DELETE_USER_LOG = "Удаление пользователя по ID: {}";
+    @Override
+    public void removeUser(Long userId) {
+        userRepository.deleteById(userId);
+    }
+
+    @Override
+    public UserDto updateUser(UserDto userDto, Long userId) {
+
+        if (userRepository.existsByEmail(userDto.getEmail()))
+            throw new UserAlreadyExistsException("Такой email у пользователя уже существует");
+
+        if (userDto.getId() == null) {
+            userDto.setId(userId);
+        }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+
+        if (userDto.getName() != null) {
+            user.setName(userDto.getName());
+        }
+
+        if (userDto.getEmail() != null) {
+            user.setEmail(userDto.getEmail());
+        }
+
+        return userMapper.toUserDto(userRepository.save(userMapper.toUser(userDto)));
+    }
+
+    @Override
+    public Collection<UserDto> getUsers() {
+        return userRepository.findAll().stream()
+                .map(userMapper::toUserDto)
+                .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+    }
+
+    @Override
+    public UserDto getUserById(Long userId) {
+        User user = userRepository.getReferenceById(userId);
+        return userMapper.toUserDto(user);
+    }
 }

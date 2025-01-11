@@ -1,4 +1,4 @@
-package ru.practicum.shareit.booking.mapper;
+package ru.practicum.shareit.booking.dto.mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -9,7 +9,7 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.item.mapper.ItemMapper;
-import ru.practicum.shareit.user.UserService;
+import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.user.mapper.UserMapper;
 
 @Component

@@ -13,12 +13,12 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class ItemDto {
-    private Long id; // id вещи
-    private String name; // краткое название вещи
-    private String description; // описание
-    private Boolean available; // статус доступности
+    private Long id;
+    private String name;
+    private String description;
+    private Boolean available;
     private UserDto owner;
-    private Long requestId; // id запроса вещи
+    private Long requestId;
     private BookingShortDto lastBooking;
     private BookingShortDto nextBooking;
     private List<CommentDto> comments;

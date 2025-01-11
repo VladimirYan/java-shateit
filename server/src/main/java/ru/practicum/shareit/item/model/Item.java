@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.internal.util.stereotypes.Lazy;
 import ru.practicum.shareit.user.model.User;
 
 @Entity
@@ -17,17 +18,18 @@ public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id; // id вещи
+    private Long id;
 
-    private String name; // краткое название вещи
+    private String name;
 
-    private String description; // описание
+    private String description;
 
-    private Boolean available; // статус доступности
+    private Boolean available;
 
+    @Lazy
     @ManyToOne
     @JoinColumn(name = "owner", referencedColumnName = "id")
-    private User owner; // id владельца вещи
+    private User owner;
 
-    private Long requestId; // id запроса вещи, если она была создана по запросу другого пользователя
+    private Long requestId;
 }

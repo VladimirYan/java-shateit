@@ -13,12 +13,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class UserDto {
-    private Long id; // уникальный идентификатор
+    private Long id;
     @NotNull
     @NotBlank
-    private String name; // имя или логин пользователя
+    private String name;
     @Email
     @NotNull
     @NotBlank
-    private String email; // почта пользователя
+    private String email;
 }

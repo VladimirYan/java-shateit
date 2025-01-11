@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.internal.util.stereotypes.Lazy;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
@@ -30,12 +31,12 @@ public class Booking {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @NotNull
+    @Lazy
     @ManyToOne
     @JoinColumn(name = "booker_id", referencedColumnName = "id")
     private User booker;
 
-    @NotNull
+    @Lazy
     @ManyToOne
     @JoinColumn(name = "item_id", referencedColumnName = "id")
     private Item item;

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.internal.util.stereotypes.Lazy;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
@@ -19,17 +20,19 @@ public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id; // идентификатор комментария
+    private Long id;
 
-    private String text; // Текст комментария
+    private String text;
 
+    @Lazy
     @ManyToOne
     @JoinColumn(name = "item_id")
-    private Item item; // Вещь, к которой относится комментарий
+    private Item item;
 
+    @Lazy
     @ManyToOne
     @JoinColumn(name = "author_id")
-    private User author; // Автор комментария
+    private User author;
 
-    private LocalDateTime created; // Дата и время создания комментария
+    private LocalDateTime created;
 }

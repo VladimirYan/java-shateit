@@ -9,16 +9,16 @@ import ru.practicum.shareit.booking.dto.BookUpdateRequestDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingInputDto;
 import ru.practicum.shareit.booking.dto.BookingShortDto;
-import ru.practicum.shareit.booking.mapper.BookingMapper;
+import ru.practicum.shareit.booking.dto.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.exception.CustomUserNotFoundException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.service.ItemService;
-import ru.practicum.shareit.user.UserService;
+import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -122,73 +122,50 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-    @Override
     public List<BookingDto> getBookings(String state, Long userId) {
+        if (userService.getUserById(userId) == null) {
+            throw new NotFoundException("Пользователь не найден");
+        }
 
-        isUserNotFound(userId);
-
+        BookingState bookingState = BookingState.from(state);
         List<Booking> bookings;
         Sort sortByStartDesc = Sort.by(Sort.Direction.DESC, "start");
 
-        switch (state) {
-            case "ALL":
-                bookings = repository.findByBookerId(userId, sortByStartDesc);
-                break;
-            case "CURRENT":
-                bookings = repository.findActiveBookings(userId, LocalDateTime.now(),
-                        LocalDateTime.now(), sortByStartDesc);
-                break;
-            case "PAST":
-                bookings = repository.findPastBookings(userId, LocalDateTime.now(), sortByStartDesc);
-                break;
-            case "FUTURE":
-                bookings = repository.findFutureBookings(userId, LocalDateTime.now(), sortByStartDesc);
-                break;
-            case "WAITING":
-                bookings = repository.findByBookerAndStatus(userId, Status.WAITING, sortByStartDesc);
-                break;
-            case "REJECTED":
-                bookings = repository.findByBookerAndStatus(userId, Status.REJECTED, sortByStartDesc);
-                break;
-            default:
-                throw new ValidationException("Unknown state: " + state);
-        }
+        bookings = switch (bookingState) {
+            case ALL -> repository.findByBookerId(userId, sortByStartDesc);
+            case CURRENT -> repository.findActiveBookings(userId, LocalDateTime.now(),
+                    LocalDateTime.now(), sortByStartDesc);
+            case PAST -> repository.findPastBookings(userId, LocalDateTime.now(), sortByStartDesc);
+            case FUTURE -> repository.findFutureBookings(userId, LocalDateTime.now(), sortByStartDesc);
+            case WAITING -> repository.findByBookerAndStatus(userId, Status.WAITING, sortByStartDesc);
+            case REJECTED -> repository.findByBookerAndStatus(userId, Status.REJECTED, sortByStartDesc);
+        };
+
         return bookings.stream()
                 .map(mapper::toBookingDto)
                 .collect(Collectors.toList());
     }
 
-    @Override
     public List<BookingDto> getBookingsOwner(String state, Long userId) {
+        if (userService.getUserById(userId) == null) {
+            throw new NotFoundException("Пользователь не найден");
+        }
 
-        isUserNotFound(userId);
-
+        BookingState bookingState = BookingState.from(state);
         List<Booking> bookings;
         Sort sortByStartDesc = Sort.by(Sort.Direction.DESC, "start");
-        switch (state) {
-            case "ALL":
-                bookings = repository.findByOwner(userId, sortByStartDesc);
-                break;
-            case "CURRENT":
-                bookings = repository.findOwnerActiveBookings(userId, LocalDateTime.now(),
-                        LocalDateTime.now(), sortByStartDesc);
-                break;
-            case "PAST":
-                bookings = repository.findOwnerPastBookings(userId, LocalDateTime.now(), sortByStartDesc);
-                break;
-            case "FUTURE":
-                bookings = repository.findOwnerFutureBookings(userId, LocalDateTime.now(),
-                        sortByStartDesc);
-                break;
-            case "WAITING":
-                bookings = repository.findOwnerBookingsByStatus(userId, Status.WAITING, sortByStartDesc);
-                break;
-            case "REJECTED":
-                bookings = repository.findOwnerBookingsByStatus(userId, Status.REJECTED, sortByStartDesc);
-                break;
-            default:
-                throw new ValidationException("Unknown state: " + state);
-        }
+
+        bookings = switch (bookingState) {
+            case ALL -> repository.findByOwner(userId, sortByStartDesc);
+            case CURRENT -> repository.findOwnerActiveBookings(userId, LocalDateTime.now(),
+                    LocalDateTime.now(), sortByStartDesc);
+            case PAST -> repository.findOwnerPastBookings(userId, LocalDateTime.now(), sortByStartDesc);
+            case FUTURE -> repository.findOwnerFutureBookings(userId, LocalDateTime.now(),
+                    sortByStartDesc);
+            case WAITING -> repository.findOwnerBookingsByStatus(userId, Status.WAITING, sortByStartDesc);
+            case REJECTED -> repository.findOwnerBookingsByStatus(userId, Status.REJECTED, sortByStartDesc);
+        };
+
         return bookings.stream()
                 .map(mapper::toBookingDto)
                 .collect(Collectors.toList());
